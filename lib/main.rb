@@ -20,16 +20,16 @@ class Main
     str
   end
 
-  def positions
+  def positions(min_val=2)
     @binance || connect_binance
     str = "--- Positions ---\n"
     str = "symbol  |  size  =>  USD value\n"
-    balances = @binance.balances
+    balances = @binance.balances.select{ |position| position['mkt_val'].to_d > min_val }
     balances = balances.sort{ |a, b| b['mkt_val'].to_d <=> a['mkt_val'].to_d }
     balances.each do |p|
       str += position_line_item p
     end
-    str += '----- end of positions -----\n'
+    str += "----- end of positions -----\n"
     str
   end
 
