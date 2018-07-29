@@ -20,10 +20,70 @@ class Main
     str
   end
 
-  def positions(min_val=2)
+
+  def sell
+    @binance || connect_binance
+    
+    print_top_positions
+
+    log = {}
+
+    puts "enter ticker to sell ('BNB' or 'ADA BCC SALT')"
+    tickers = gets.chomp.upcase.split(' ')
+
+    while true
+      puts "sell for ETH? (y/n)"
+      response = gets.chomp.downcase
+      if response == 'y'
+        base = 'ETH'
+        break
+      else
+        puts "sell for BTC? (y/n)"
+        response = gets.chomp.downcase
+        if response == 'y'
+          base = 'BTC'
+          break
+        end
+      end
+    end
+    tickers.each do |ticker|
+      pair = ticker + base
+      size = BigDecimal.new(@binance.position_by_ticker(ticker.upcase))
+      order_size = @binance.order_size(pair, size).to_s
+      order_opts = {
+        symbol: pair,
+        side: "SELL",
+        type: "MARKET",
+        quantity: order_size
+      }
+      log[ticker] = {
+        "order" => order_opts,
+        "response" => @binance.sell(order_opts)
+      }
+    end
+    log
+  end
+
+  def top_positions(qty=5)
+    @binance || connect_binance
+    balances = @binance.balances.select{ |position| position['mkt_val'].to_d }
+    balances = balances.sort{ |a, b| b['mkt_val'].to_d <=> a['mkt_val'].to_d }
+    balances[0...qty]
+  end
+
+  def print_top_positions(num=5)
+    puts "-- Top #{num} Holdings --"
+    puts "symbol - qty - USD val"
+    top_positions.each do |position|
+      puts "#{position['asset']} #{position['free'].to_f.round(4)} $#{position['mkt_val'].to_f.round(2)}"
+    end
+    puts "--- --- --- ---"
+  end
+
+  def print_positions(min_val=2)
     @binance || connect_binance
     str = "--- Positions ---\n"
-    str = "symbol  |  size  =>  USD value\n"
+    str += "symbol  |  size  =>  USD value\n"
     balances = @binance.balances.select{ |position| position['mkt_val'].to_d > min_val }
     balances = balances.sort{ |a, b| b['mkt_val'].to_d <=> a['mkt_val'].to_d }
     balances.each do |p|
@@ -37,22 +97,6 @@ class Main
     ticker = position['asset']
     # "#{ticker}  #{position['free']} @ #{@cmc.quote(ticker)}\n"
     "#{ticker}  #{position['free']}   =>  #{position['mkt_val'].to_f.round(2)}\n"
-  end
-
-  def sell
-    @binance || connect_binance
-    puts "enter ticker to sell ('BNB' or 'ADA BCC SALT')"
-    ticker = gets.chomp.upcase
-    puts "enter base currency 'ETH' or 'BTC'"
-    base = gets.chomp.upcase
-
-    pair = ticker + base
-    size = BigDecimal.new(@binance.position_by_ticker(ticker.upcase))
-    order_size = @binance.order_size(pair, size).to_s
-
-    puts "sell #{ticker} for #{base}"
-    puts "full size: #{size}"
-    puts "order size: #{order_size}"
   end
 end
 

@@ -7,9 +7,9 @@ while true
   response = gets.chomp
   case response.downcase
   when "1"
-    puts main.positions
+    puts main.print_positions
   when "2"
-    main.sell
+    puts main.sell
   when 'q'
     break
   end  

@@ -14,10 +14,11 @@ class CoinMarketCap
   end
 
   def listing(ticker)
-    @listings.detect{ |listing| listing["sybol"] == ticker }
+    @listings.detect{ |listing| listing["symbol"] == ticker }
   end
 
   def quote(ticker)
     @data.detect { |curr| curr["symbol"] == ticker.upcase }
   end
+
 end
