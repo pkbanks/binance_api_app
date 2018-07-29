@@ -14,6 +14,7 @@ class Main
     str = "Main Menu\n"
     str += "1.  List positions\n"
     str += "2.  Sell\n"
+    str += "3.  Buy Bitcoin\n"
     str += "Q.  Quit\n"
     str += "-----------\n"
     str += "What would you like to do?"
@@ -48,11 +49,17 @@ class Main
     end
     tickers.each do |ticker|
       pair = ticker + base
-      size = BigDecimal.new(@binance.position_by_ticker(ticker.upcase))
+      pair = "ETHBTC" if ticker == "BTC"
+      if ticker == "BTC"
+        size = how_much_eth_to_buy
+      else
+        size = BigDecimal.new(@binance.position_by_ticker(ticker.upcase))
+      end
+      
       order_size = @binance.order_size(pair, size).to_s
       order_opts = {
         symbol: pair,
-        side: "SELL",
+        side: ticker == 'BTC' ? "BUY" : "SELL",
         type: "MARKET",
         quantity: order_size
       }
@@ -80,6 +87,13 @@ class Main
     puts "--- --- --- ---"
   end
 
+  def how_much_eth_to_buy
+    pair = 'ETHBTC'
+    btc_amount = @binance.position_by_ticker('BTC').to_d
+    price = @binance.order_book(pair)["askPrice"].to_d
+    btc_amount / price
+  end
+
   def print_positions(min_val=2)
     @binance || connect_binance
     str = "--- Positions ---\n"
@@ -95,24 +109,6 @@ class Main
 
   def position_line_item(position)
     ticker = position['asset']
-    # "#{ticker}  #{position['free']} @ #{@cmc.quote(ticker)}\n"
     "#{ticker}  #{position['free']}   =>  #{position['mkt_val'].to_f.round(2)}\n"
   end
 end
-
-
-# tickers = %w[IOTA ETC ZEN BCC]
-# base = 'ETH'
-# tickers.each do |ticker|
-#   pair = ticker.upcase + base.upcase
-#   size = BigDecimal.new(binance.position_by_ticker(ticker.upcase))
-#   order_size = binance.order_size(pair, size).to_s
-#   puts "selling #{ticker}"
-#   puts "full size: #{binance.position_by_ticker(ticker)}"
-#   puts "order size: #{order_size}"
-#   opts = {
-#     symbol: pair,
-#     quantity: order_size
-#   }
-#   p binance.sell(opts)
-# end

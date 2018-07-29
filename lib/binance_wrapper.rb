@@ -36,11 +36,15 @@ class BinanceWrapper
     end
   end
 
+  def order_book(pair)
+    @client.book_ticker({symbol: pair})
+  end
+
   def sell(opts={})
     # example:
     #   opts = {
     #     symbol: "XRPETH",  # buy XRP with ETH
-    #     side: "BUY",
+    #     side: "SELL",
     #     type: "MARKET",
     #     quantity: 100
     #   }
@@ -72,4 +76,6 @@ class BinanceWrapper
   def position_by_ticker(ticker)
     @client.account_info["balances"].detect{ |position| position["asset"] == ticker.upcase}["free"]
   end
+
+  
 end
