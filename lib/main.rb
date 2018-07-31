@@ -25,7 +25,7 @@ class Main
   def sell
     @binance || connect_binance
     
-    print_top_positions
+    print_top_positions(6)
 
     log = {}
 
@@ -48,6 +48,7 @@ class Main
       end
     end
     tickers.each do |ticker|
+      puts "ticker: #{ticker}"
       pair = ticker + base
       pair = "ETHBTC" if ticker == "BTC"
       if ticker == "BTC"

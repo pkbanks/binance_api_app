@@ -7,18 +7,19 @@ class BinanceWrapper
 
   # attr_reader :client
   def initialize
-    puts "API key:"
-    api_key = gets.chomp
-    puts "API secret:"
-    api_secret = gets.chomp
-    @client = Binance::Client::REST.new api_key: api_key, secret_key: api_secret
-    @exchange_info = @client.exchange_info["symbols"]
-    @coin_market_cap = CoinMarketCap.new
-
     @alt_symbols = {
       "BCC" => "BCH",
       "IOTA" => "MIOTA"
     }
+    @coin_market_cap = CoinMarketCap.new
+
+    puts "API key:"
+    api_key = gets.chomp
+    puts "API secret:"
+    api_secret = gets.chomp
+
+    @client = Binance::Client::REST.new api_key: api_key, secret_key: api_secret
+    @exchange_info = @client.exchange_info["symbols"]
   end
 
   def ping
@@ -48,7 +49,7 @@ class BinanceWrapper
     #     type: "MARKET",
     #     quantity: 100
     #   }
-    opts[:side] = "SELL"
+    opts[:side] = opts[:side] || "SELL"
     opts[:type] = opts[:type] || "MARKET"
     opts[:quantity] = order_size(opts[:symbol], opts[:quantity])
     @client.create_order! symbol: opts[:symbol], side: opts[:side], type: opts[:type], quantity: opts[:quantity]
