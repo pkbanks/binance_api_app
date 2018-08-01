@@ -48,7 +48,6 @@ class Main
       end
     end
     tickers.each do |ticker|
-      puts "ticker: #{ticker}"
       pair = ticker + base
       pair = "ETHBTC" if ticker == "BTC"
       if ticker == "BTC"
@@ -82,7 +81,7 @@ class Main
   def print_top_positions(num=5)
     puts "-- Top #{num} Holdings --"
     puts "symbol - qty - USD val"
-    top_positions.each do |position|
+    top_positions(num).each do |position|
       puts "#{position['asset']} #{position['free'].to_f.round(4)} $#{position['mkt_val'].to_f.round(2)}"
     end
     puts "--- --- --- ---"
