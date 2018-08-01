@@ -14,7 +14,6 @@ class Main
     str = "Main Menu\n"
     str += "1.  List positions\n"
     str += "2.  Sell\n"
-    str += "3.  Buy Bitcoin\n"
     str += "Q.  Quit\n"
     str += "-----------\n"
     str += "What would you like to do?"
