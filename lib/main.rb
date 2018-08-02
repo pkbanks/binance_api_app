@@ -14,6 +14,7 @@ class Main
     str = "Main Menu\n"
     str += "1.  List positions\n"
     str += "2.  Sell\n"
+    str += "3.  Withdraw\n"
     str += "Q.  Quit\n"
     str += "-----------\n"
     str += "What would you like to do?"
@@ -68,6 +69,29 @@ class Main
       }
     end
     log
+  end
+
+  def withdraw
+    @binance || connect_binance
+    
+    print_top_positions(6)
+    puts "Ticker to withdraw:"
+    ticker = gets.chomp
+    puts "Address to send:"
+    address = gets.chomp
+    puts "memo field:"
+    memo = gets.chomp
+    memo = "no memo" if memo == ""
+    puts "Amount to send"
+    amount = gets.chomp
+
+    opts = {
+      asset: ticker.upcase,
+      address: address,
+      description: memo,
+      amount: amount
+    }
+    @binance.withdraw(opts)
   end
 
   def top_positions(qty=5)

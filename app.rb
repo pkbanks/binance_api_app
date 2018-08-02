@@ -10,6 +10,8 @@ while true
     puts main.print_positions
   when "2"
     puts main.sell
+  when "3"
+    puts main.withdraw
   when 'q'
     break
   end  

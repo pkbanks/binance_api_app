@@ -78,5 +78,20 @@ class BinanceWrapper
     @client.account_info["balances"].detect{ |position| position["asset"] == ticker.upcase}["free"]
   end
 
+  def withdraw(opts)
+    opts = {
+      asset: opts[:asset],
+      address: opts[:address],
+      name: opts[:description],
+      amount: opts[:amount]
+    }
+    res = @client.withdraw!(opts)
+    if res["success"]
+      res.merge(opts)
+      res["fee"] = @client.withdraw_fee({asset: opts[:asset].upcase}) 
+    end
+    res
+  end
+
   
 end
